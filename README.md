@@ -31,7 +31,12 @@ pip install -r requirements.txt
 ```
 4. Copy the `.env.example` file and rename it to `.env`. Update the `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, and `DJANGO_ALLOWED_HOSTS` variables in the `.env` file with your own values.
 
-5. Start the Docker services
+5. Run the Django migrations
+```bash
+python manage.py migrate
+```
+
+6. Start the Docker services
 ```bash
 docker-compose up -d
 ```
