@@ -16,33 +16,23 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #: core/models.py:6
 msgid "title"
-msgstr "title"
+msgstr ""
 
 #: core/models.py:7
 msgid "description"
-msgstr "description"
+msgstr ""
 
 #: core/models.py:10
 msgid "Blog"
-msgstr "Blogue"
+msgstr ""
 
 #: core/models.py:11
 msgid "Blogs"
-msgstr "Blogues"
+msgstr ""
 
 #: core/views.py:16
 msgid "Hello There!."
-msgstr "Salut!"
-
-#~ msgid "English"
-#~ msgstr "Anglais"
-
-#~ msgid "French"
-#~ msgstr "Francais"
-
-#~ msgid "Spanish"
-#~ msgstr "Espagnol"
+msgstr ""
