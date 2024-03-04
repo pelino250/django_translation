@@ -1,16 +1,13 @@
-# Project Title
+# Django Translation - Class Demo
 
 ## Description
 
-Provide a brief description of what your project does. Explain the problem it solves and how it does so. Mention the technologies used (in this case, Python, Django, etc.).
+A small Django project highlighting how to set Internationalization & Localization. It also includes some examples of Caching using both Django's built-in Caching mechanism and Redis.
 
 ## Installation
 
 ### Prerequisites
-
-List what software and tools a user needs to have installed before they can run your project. For example:
-
-- Python 3.x
+- Python 3.9 and above
 - pip
 - Docker
 
@@ -18,7 +15,7 @@ List what software and tools a user needs to have installed before they can run 
 
 1. Clone the repository
 ```bash
-git clone https://github.com/username/project.git
+git clone https://github.com/pelino250/django_translation.git
 ```
 
 2. Navigate to the project directory
