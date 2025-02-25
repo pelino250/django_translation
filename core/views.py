@@ -1,43 +1,62 @@
+from typing import List
+
 from django.core.cache import cache
-from django.core import serializers
-from redis import Redis
-from django.http import HttpResponse
+from django.db.models import QuerySet
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_http_methods
 
 from core.models import Blog
 
-redis_cache = Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
+@require_http_methods(["GET"])
+def index(request: HttpRequest) -> HttpResponse:
+    """Render the index page with a translated greeting message.
 
-# This function is responsible for rendering the index page.
-# It also translates a greeting message using gettext.
-def index(request):
-    message = _("Hello There!.")  # This is the translation string
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        HttpResponse: Rendered index page with greeting message.
+    """
+    message = _("Hello There!")
     return render(request, 'index.html', {'message': message})
 
 
-# This function is responsible for rendering the posts page.
-# It first tries to get the posts from Django's cache.
-# If the posts are not in the cache, it fetches them from the database and stores them in the cache.
-def posts_django_cache(request):
-    cached_posts = cache.get('cached_posts')
-    if not cached_posts:
-        db_posts = list(Blog.objects.all())
-        cache.set('cached_posts', db_posts, 60 * 15)
-    return render(request, 'posts.html', {'posts': cached_posts})
+def get_cached_posts() -> List[Blog]:
+    """Get posts from cache or database with proper error handling.
+
+    Returns:
+        List[Blog]: List of blog posts.
+    """
+    try:
+        # Try to get posts from cache
+        cached_posts = cache.get('blog_posts')
+        if cached_posts is not None:
+            return cached_posts
+
+        # If not in cache, get from database and cache them
+        posts = list(Blog.objects.filter(status=Blog.Status.PUBLISHED).order_by('-created_at'))
+        cache.set('blog_posts', posts, timeout=60 * 15)  # Cache for 15 minutes
+        return posts
+    except Exception as e:
+        # Log the error and return empty list as fallback
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error fetching posts: {str(e)}")
+        return []
 
 
-# This function is responsible for rendering the posts page.
-# It first tries to get the posts from Redis cache.
-# If the posts are not in the cache, it fetches them from the database, serializes them and stores them in the cache.
-# If the posts are in the cache, it deserializes them before rendering.
-def posts(request):
-    cached_posts = redis_cache.get('cached_posts')
-    if not cached_posts:
-        db_posts = list(Blog.objects.all())
-        serialized_db_posts = serializers.serialize('json', db_posts)
-        redis_cache.set('cached_posts', serialized_db_posts, 60 * 15)
-    else:
-        cached_posts = serializers.deserialize('json', cached_posts)
-    return render(request, 'posts.html', {'posts': [post.object for post in cached_posts]})
+@require_http_methods(["GET"])
+def posts(request: HttpRequest) -> HttpResponse:
+    """Render the posts page with cached blog posts.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        HttpResponse: Rendered posts page with blog posts.
+    """
+    posts = get_cached_posts()
+    return render(request, 'posts.html', {'posts': posts})
